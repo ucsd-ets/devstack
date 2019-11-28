@@ -50,8 +50,8 @@ services:
     container_name: edx.devstack.memcached
     hostname: memcached.devstack.edx
     image: memcached:1.4.24
-    # ports:
-    #   - "11211:11211"
+    ports:
+      - "11211:11211"
 
   mongo:
     # We use WiredTiger in all environments. In development environments we use small files
@@ -74,8 +74,8 @@ services:
       MYSQL_ROOT_PASSWORD: ""
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     image: mysql:5.6
-    # ports:
-    #   - "3306:3306"
+    ports:
+      - "13306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
