@@ -136,7 +136,7 @@ services:
       - "18130:18130"
 
   lms:
-    command: bash -c 'source /edx/app/edxapp/edxapp_env && while true; do python /edx/app/edxapp/edx-platform/manage.py lms runserver 0.0.0.0:18000 --settings devstack_docker; sleep 2; done'
+    command: bash -c 'source /edx/app/edxapp/edxapp_env && cp /edx/src/lms.yml /edx/etc && cp /edx/src/lms.env.json /edx/app/edxapp && pip install django-sslserver && while true; do python /edx/app/edxapp/edx-platform/manage.py lms runsslserver 0.0.0.0:18000 --certificate /edx/src/ssl/learnx-devstack.cer --key /edx/src/ssl/learnx-devstack.key --settings devstack_docker; sleep 2; done'
     container_name: edx.devstack.lms
     hostname: lms.devstack.edx
     depends_on:
@@ -184,7 +184,7 @@ services:
       ELASTICSEARCH_URL: "http://edx.devstack.elasticsearch:9200"
 
   studio:
-    command: bash -c 'source /edx/app/edxapp/edxapp_env && while true; do python /edx/app/edxapp/edx-platform/manage.py cms runserver 0.0.0.0:18010 --settings devstack_docker; sleep 2; done'
+    command: bash -c 'source /edx/app/edxapp/edxapp_env && cp /edx/src/studio.yml /edx/etc && cp /edx/src/cms.env.json /edx/app/edxapp && pip install django-sslserver && while true; do python /edx/app/edxapp/edx-platform/manage.py cms runsslserver 0.0.0.0:18010 --certificate /edx/src/ssl/learnx-devstack.cer --key /edx/src/ssl/learnx-devstack.key  --settings devstack_docker; sleep 2; done'
     container_name: edx.devstack.studio
     hostname: studio.devstack.edx
     depends_on:
