@@ -43,7 +43,7 @@ docker-compose exec lms bash -c 'rm /edx/app/edxapp/edx-platform/.prereqs_cache/
 
 # Create static assets for both LMS and Studio
 for app in "${apps[@]}"; do
-    docker-compose exec $app bash -c 'source /edx/app/edxapp/edxapp_env && cd /edx/app/edxapp/edx-platform && sudo -u edxapp paver update_assets --settings devstack_docker'
+    docker-compose exec $app bash -c '/edx/bin/edxapp-update-assets'
 done
 
 # Provision a retirement service account user
