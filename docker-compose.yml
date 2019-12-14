@@ -164,6 +164,7 @@ services:
       - edxapp_lms_venv:/edx/app/edxapp/venvs/edxapp
       - ${PWD}/../src/lms.yml:/edx/etc/lms.yml
       - ${PWD}/../src/lms.env.json:/edx/app/edxapp/lms.env.json
+      - ${PWD}/../src/devstack_docker.cms.py:/edx/app/edxapp/edx-platform/lms/envs/devstack_docker.py
 
   edx_notes_api:
     command: bash -c 'source /edx/app/edx_notes_api/edx_notes_api_env && while true; do python /edx/app/edx_notes_api/edx_notes_api/manage.py runserver 0.0.0.0:18120 --settings notesserver.settings.devstack; sleep 2; done'
@@ -215,6 +216,7 @@ services:
       - edxapp_studio_venv:/edx/app/edxapp/venvs/edxapp
       - ${PWD}/../src/studio.yml:/edx/etc/studio.yml
       - ${PWD}/../src/cms.env.json:/edx/app/edxapp/cms.env.json
+      - ${PWD}/../src/devstack_docker.cms.py:/edx/app/edxapp/edx-platform/cms/envs/devstack_docker.py
 
   forum:
     command: bash -c 'source /edx/app/forum/ruby_env && source /edx/app/forum/devstack_forum_env && cd /edx/app/forum/cs_comments_service && bundle install && while true; do ruby app.rb -o 0.0.0.0 ; sleep 2; done'
