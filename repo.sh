@@ -18,19 +18,19 @@ else
 fi
 
 if [ -n "${OPENEDX_RELEASE}" ]; then
-    OPENEDX_GIT_BRANCH=open-release/${OPENEDX_RELEASE}
+    DEFAULT_GIT_BRANCH=open-release/${OPENEDX_RELEASE}
 else
-    OPENEDX_GIT_BRANCH=master
+    DEFAULT_GIT_BRANCH=master
 fi
 
 repos=(
     "https://github.com/edx/course-discovery.git"
     "https://github.com/edx/credentials.git"
     "https://github.com/edx/cs_comments_service.git"
-    "https://github.com/ucsd-ets/ecommerce.git"
+    "https://github.com/ucsd-ets/ecommerce.git develop"
     "https://github.com/edx/edx-e2e-tests.git"
     "https://github.com/edx/edx-notes-api.git"
-    "https://github.com/ucsd-ets/edx-platform.git"
+    "https://github.com/ucsd-ets/edx-platform.git develop"
     "https://github.com/edx/xqueue.git"
     "https://github.com/edx/edx-analytics-pipeline.git"
     "https://github.com/edx/gradebook.git"
@@ -41,18 +41,35 @@ private_repos=(
     "https://github.com/edx/edx-themes.git"
 )
 
+branch_pattern="\.git (.*)$"
 name_pattern=".*/(.*).git"
+repo_pattern=".*/(.*.git)"
+
+_set_repo_params ()
+	{
+	# Use Bash's regex match operator to capture the name of the repo.
+	# Results of the match are saved to an array called $BASH_REMATCH.
+	[[ $1 =~ $name_pattern ]]
+	name="${BASH_REMATCH[1]}"
+
+	if [[ $1 =~ $branch_pattern ]]
+	then
+		OPENEDX_GIT_BRANCH="${BASH_REMATCH[1]}"
+	else
+		OPENEDX_GIT_BRANCH="${DEFAULT_GIT_BRANCH}"
+	fi
+
+	[[ $1 =~ $repo_pattern ]]
+	repo="${BASH_REMATCH[1]}"
+	}
 
 _checkout ()
 {
     repos_to_checkout=("$@")
 
-    for repo in "${repos_to_checkout[@]}"
+    for repo_full in "${repos_to_checkout[@]}"
     do
-        # Use Bash's regex match operator to capture the name of the repo.
-        # Results of the match are saved to an array called $BASH_REMATCH.
-        [[ $repo =~ $name_pattern ]]
-        name="${BASH_REMATCH[1]}"
+		_set_repo_params "$repo_full"
 
         # If a directory exists and it is nonempty, assume the repo has been cloned.
         if [ -d "$name" -a -n "$(ls -A "$name" 2>/dev/null)" ]; then
@@ -73,12 +90,10 @@ _clone ()
 {
     # for repo in ${repos[*]}
     repos_to_clone=("$@")
-    for repo in "${repos_to_clone[@]}"
+    for repo_full in "${repos_to_clone[@]}"
     do
-        # Use Bash's regex match operator to capture the name of the repo.
-        # Results of the match are saved to an array called $BASH_REMATCH.
-        [[ $repo =~ $name_pattern ]]
-        name="${BASH_REMATCH[1]}"
+		_set_repo_params "$repo_full"
+		echo "Checking out branch $OPENEDX_GIT_BRANCH for repo $repo in directory $name"
 
         # If a directory exists and it is nonempty, assume the repo has been checked out
         # and only make sure it's on the required branch
@@ -124,10 +139,10 @@ clone_private ()
 reset ()
 {
     currDir=$(pwd)
-    for repo in ${repos[*]}
+    for repo_full in ${repos[*]}
     do
-        [[ $repo =~ $name_pattern ]]
-        name="${BASH_REMATCH[1]}"
+		_set_repo_params "$repo_full"
+		echo "Resetting to master for repo $repo in directory $name"
 
         if [ -d "$name" ]; then
             cd $name;git reset --hard HEAD;git checkout master;git reset --hard origin/master;git pull;cd "$currDir"
