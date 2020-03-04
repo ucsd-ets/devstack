@@ -4,6 +4,7 @@
 #   - If you are adding a new service make sure the dev.reset target will fully reset said service.
 #
 ########################################################################################################################
+
 .DEFAULT_GOAL := help
 .PHONY: requirements
 
@@ -24,6 +25,10 @@ ifneq (,$(findstring MINGW,$(OS)))
     DEVNULL :=
 else
     DEVNULL := >/dev/null
+endif
+
+ifeq (,$(VIRTUAL_ENV))
+$(error "You must source a virtual environment, e.g.: source ./edx-ironwood/bin/activate")
 endif
 
 COMPOSE_PROJECT_NAME=devstack
