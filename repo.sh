@@ -43,7 +43,7 @@ private_repos=(
 
 branch_pattern="\.git (.*)$"
 name_pattern=".*/(.*).git"
-repo_pattern=".*/(.*.git)"
+repo_pattern="(.*/.*\.git)"
 
 _set_repo_params ()
 	{
@@ -92,6 +92,7 @@ _clone ()
     repos_to_clone=("$@")
     for repo_full in "${repos_to_clone[@]}"
     do
+		echo "$repo_full"
 		_set_repo_params "$repo_full"
 		echo "Checking out branch $OPENEDX_GIT_BRANCH for repo $repo in directory $name"
 
